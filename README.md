@@ -8,7 +8,7 @@ visualize sequence tagging results.
 ```python
 from seqviz import TaggedSequence
 
-bio = [('Alex', 'I-PER'),
+data = [('Alex', 'I-PER'),
  ('is', 'O'),
  ('going', 'O'),
  ('to', 'O'),
@@ -17,7 +17,7 @@ bio = [('Alex', 'I-PER'),
  ('in', 'O'),
  ('California', 'I-LOC')]
 
-tagged = TaggedSequence.from_bio(bio)
+tagged = TaggedSequence.from_bio(data, fmt="iob1")
 
 print(tagged)
 ```

@@ -15,9 +15,15 @@ class TaggedSequence:
         self._annotations: List[Annotation] = annotations if annotations else []
 
     @staticmethod
-    def from_bio(seq: List[Tuple[str, str]]) -> "TaggedSequence":
+    def from_bio(seq: List[Tuple[str, str]], fmt="iob2") -> "TaggedSequence":
+        if fmt == "iob1":
+            labels = TaggedSequence._iob1_to_iob2([s[1] for s in seq])
+        elif fmt == "iob2":
+            labels = [s[1] for s in seq]
+        else:
+            raise ValueError(f"Invalid tagging scheme: {fmt}")
+
         tokens = [s[0] for s in seq]
-        labels = [s[1] for s in seq]
         text = " ".join(tokens)
 
         start_offsets = []
@@ -40,6 +46,43 @@ class TaggedSequence:
 
         return TaggedSequence(text, annotations)
 
+    @staticmethod
+    def _iob1_to_iob2(tags: List[str]) -> List[str]:
+        """
+        Check that tags have a valid IOB format.
+        Tags in IOB1 format are converted to IOB2.
+        """
+        # https://gist.github.com/allanj/b9bd448dc9b70d71eb7c2b6dd33fe4ef
+
+        result = []
+        for i, tag in enumerate(tags):
+            if tag == "O":
+                result.append("O")
+                continue
+
+            split = tag.split("-")
+            if len(split) != 2 or split[0] not in ["I", "B"]:
+                raise ValueError("Invalid IOB1 sequence")
+
+            if split[0] == "B":
+                result.append(tag)
+            elif i == 0 or tags[i - 1] == "O":
+                result.append("B" + tag[1:])
+            elif tags[i - 1][1:] == tag[1:]:
+                result.append(tag)
+            else:
+                result.append("B" + tag[1:])
+
+        return result
+
+    @staticmethod
+    def from_bert(seq: List[Tuple[str, str]]) -> "TaggedSequence":
+        pass
+
+    @staticmethod
+    def from_conll(s: str) -> "Tagger":
+        pass
+
     def __str__(self) -> str:
         result = ""
         offset = 0
@@ -51,6 +94,7 @@ class TaggedSequence:
             result += f"[{self._text[start:end]}]({annotation.tag})"
             offset = end
 
+        result += self._text[offset:]
         return result
 
     def __repr__(self) -> str:
@@ -81,46 +125,10 @@ class TaggedSequence:
             style = f"color:rgb({r}, {g}, {b});"
 
             ruby = f'<ruby style="{style}"> {s} <rp>(</rp><rt>{tag}</rt><rp>)</rp> </ruby>'
-            span = f'<span style="  outline: 1px dotted green;">{ruby}</span>'
+            span = f'<span style="outline: 1px dotted green;">{ruby}</span>'
             result += span
             offset = end
 
+        result += self._text[offset:]
+
         return f"<div>{result}</div>"
-
-
-def main():
-    iob2 = """
-    Alex B-PER
-    is O
-    going O
-    to O
-    get O
-    rich O
-    by O
-    shorting O
-    Tesla B-ORG
-    stocks O
-    """
-    iob2 = """
-    Mr. B-NP
-    Meador I-NP
-    had B-VP
-    been I-VP
-    executive B-NP
-    vice I-NP
-    president I-NP
-    of B-PP
-    Balcor B-NP
-    """
-    seq = [tuple(s.strip().split(" ")) for s in iob2.split("\n") if s.strip()]
-
-    tagged = TaggedSequence.from_bio(seq)
-
-    print(tagged)
-    print(tagged._repr_html_())
-
-    cmap = matplotlib.cm.get_cmap("Spectral")
-
-
-if __name__ == "__main__":
-    main()
