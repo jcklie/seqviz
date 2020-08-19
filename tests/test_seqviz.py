@@ -57,7 +57,7 @@ def test_from_iob2_simple():
 def test_from_iob2_adjacent():
     data = [
         ("Today", "O"),
-        ("Alice", "I-PER"),
+        ("Alice", "B-PER"),
         ("Bob", "B-PER"),
         ("and", "O"),
         ("I", "B-PER"),
@@ -69,6 +69,26 @@ def test_from_iob2_adjacent():
     s = str(seq)
 
     assert s == "Today [Alice](PER) [Bob](PER) and [I](PER) ate lasagna"
+
+
+def test_from_bioes_simple():
+    data = [
+        ("Alex", "S-PER"),
+        ("is", "O"),
+        ("going", "O"),
+        ("with", "O"),
+        ("Marty", "B-PER"),
+        ("A", "I-PER"),
+        ("Rick", "E-PER"),
+        ("to", "O"),
+        ("Los", "B-LOC"),
+        ("Angeles", "E-LOC"),
+    ]
+
+    seq = TaggedSequence.from_bio(data, fmt="bioes")
+    s = str(seq)
+
+    assert s == "[Alex](PER) is going with [Marty A Rick](PER) to [Los Angeles](LOC)"
 
 
 def test_from_bert():

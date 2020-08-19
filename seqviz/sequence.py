@@ -18,7 +18,7 @@ class TaggedSequence:
     def from_bio(seq: List[Tuple[str, str]], fmt="iob2") -> "TaggedSequence":
         if fmt == "iob1":
             labels = TaggedSequence._iob1_to_iob2([s[1] for s in seq])
-        elif fmt == "iob2":
+        elif fmt == "iob2" or fmt == "bioes":
             labels = [s[1] for s in seq]
         else:
             raise ValueError(f"Invalid tagging scheme: {fmt}")
@@ -122,13 +122,13 @@ class TaggedSequence:
             r = int(rgba[0] * 255)
             g = int(rgba[1] * 255)
             b = int(rgba[2] * 255)
-            style = f"color:rgb({r}, {g}, {b});"
+            style = f"color:rgb({r}, {g}, {b})"
 
             ruby = f'<ruby style="{style}"> {s} <rp>(</rp><rt>{tag}</rt><rp>)</rp> </ruby>'
-            span = f'<span style="outline: 1px dotted green;">{ruby}</span>'
+            span = f'<span style="outline: 1px dotted grey;">{ruby}</span>'
             result += span
             offset = end
 
         result += self._text[offset:]
 
-        return f"<div>{result}</div>"
+        return f'<div style="font-size: 24px;">{result}</div>'
