@@ -43,7 +43,7 @@ data = [
     ("lasagna", "O"),
 ]
 
-tagged = TaggedSequence.from_bio(data, fmt="iob1")
+tagged = TaggedSequence.from_bio(data, fmt="iob2")
 
 print(tagged) # Today [Alice](PER) [Bob](PER) and [I](PER) ate lasagna
 ```
