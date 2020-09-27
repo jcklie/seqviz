@@ -1,9 +1,9 @@
 from typing import List, Tuple
 
-import torch
 
+def tokenize_for_bert(text: str, tokenizer) -> Tuple[List[int], List[int]]:
+    import torch
 
-def tokenize_for_bert(text: str, tokenizer) -> Tuple[torch.Tensor, List[int]]:
     my_tokens = text.strip().split()
 
     grouped_inputs = []
