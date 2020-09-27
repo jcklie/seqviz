@@ -1,5 +1,10 @@
 # seqviz
 
+![Python package](https://github.com/jcklie/seqviz/workflows/Python%20package/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://badge.fury.io/py/seqviz.svg)](https://badge.fury.io/py/seqviz)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 **seqviz** (sequence visualization) is a Python package to visualize sequence tagging results. It can be either be used
 to print to console or in Jupyter Notebooks.
 
