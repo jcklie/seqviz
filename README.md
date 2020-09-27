@@ -3,6 +3,11 @@
 **seqviz** (sequence visualization) is a Python package to visualize sequence tagging results. It can be either be used
 to print to console or in Jupyter Notebooks.
 
+<p align="center">
+  <img src="img/header.png" />
+</p>
+
+
 ## Usage
 
 You can load tagged sentences from many common formats:
