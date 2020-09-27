@@ -3,6 +3,21 @@ name = "seqviz"
 version = "0.1.0"
 description = "seqviz is a Python package to visualize sequence tagging results. It can be either be used to print to console or in Jupyter Notebooks."
 authors = ["Jan-Christoph Klie <git@mrklie.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/jcklie/seqviz"
+repository = "https://github.com/jcklie/seqviz"
+keywords = ["nlp", "deep learning", "transformers", "sequence tagging", "visualization"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+    "Operating System :: OS Independent",
+    "Framework :: Jupyter",
+    "Framework :: IPython",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+include = ["LICENSE"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
