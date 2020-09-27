@@ -92,7 +92,9 @@ Or as HTML via `seq.to_html()`:
 
 You can also use `TaggedSequence` in an Jupyter notebook:
 
-
+<p align="center">
+  <img src="img/jupyter_ner.png" />
+</p>
 
 ## Integration with other NLP frameworks
 
@@ -121,7 +123,7 @@ label_list = [
     "I-LOC"    # Location
 ]
 
-text = "Hugging Face Inc. is a company based in New York City. Its headquarters are in DUMBO, therefore very" \
+text = "Hugging Face Inc. is a company based in New York City. Its headquarters are in DUMBO, therefore very " \
            "close to the Manhattan Bridge."
 
 inputs, groups = tokenize_for_bert(text, tokenizer)
