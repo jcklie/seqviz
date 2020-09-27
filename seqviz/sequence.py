@@ -1,8 +1,5 @@
-from collections import namedtuple
+from collections import Counter, namedtuple
 from typing import List, Tuple
-
-import matplotlib
-from matplotlib import cm
 
 from seqviz.seqeval import get_entities
 
@@ -13,6 +10,7 @@ class TaggedSequence:
     def __init__(self, text: str, annotations: List[Annotation] = None):
         self._text: str = text
         self._annotations: List[Annotation] = annotations if annotations else []
+        self.tags = []
 
     @staticmethod
     def from_bio(seq: List[Tuple[str, str]], fmt="iob2") -> "TaggedSequence":
@@ -76,11 +74,32 @@ class TaggedSequence:
         return result
 
     @staticmethod
-    def from_bert(seq: List[Tuple[str, str]]) -> "TaggedSequence":
-        pass
+    def from_transformers_bio(text: str, sizes: List[int], predictions: List[str], fmt="iob1") -> "TaggedSequence":
+        # Remove [CLS] and [SEP]
+        sizes = sizes[1:-1]
+        predictions = predictions[1:-1]
+        assert len(predictions) == sum(sizes)
+
+        tokens = text.strip().split()
+        grouped_predictions = []
+        ptr = 0
+
+        for size in sizes:
+            group = predictions[ptr : ptr + size]
+            assert len(group) == size
+
+            grouped_predictions.append(group)
+            ptr += size
+
+        assert len(tokens) == len(sizes) == len(grouped_predictions)
+
+        merged_predictions = [Counter(p).most_common(1)[0][0] for p in grouped_predictions]
+        seq = [(t, p) for t, p in zip(tokens, merged_predictions)]
+
+        return TaggedSequence.from_bio(seq, fmt=fmt)
 
     @staticmethod
-    def from_conll(s: str) -> "Tagger":
+    def from_conll(s: str) -> "TaggedSequence":
         pass
 
     def __str__(self) -> str:
@@ -100,15 +119,22 @@ class TaggedSequence:
     def __repr__(self) -> str:
         return str(self)
 
+    def to_html(self):
+        return self._repr_html_()
+
     def _repr_html_(self):
         result = ""
         offset = 0
 
-        tags = list(set(a.tag for a in self._annotations))
-        tags_to_idx = {tag: idx for idx, tag in enumerate(sorted(tags))}
+        # https://observablehq.com/@d3/color-schemes
+        colors = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#ffff33", "#a65628", "#f781bf", "#999999"]
 
-        norm = matplotlib.colors.Normalize(vmin=0, vmax=len(tags) - 1)
-        cmap = matplotlib.cm.get_cmap("Set1")
+        if not self.tags:
+            tags = list(set(a.tag for a in self._annotations))
+        else:
+            tags = self.tags
+
+        tags_to_color = {tag: colors[idx] for idx, tag in enumerate(sorted(tags))}
 
         for annotation in self._annotations:
             start = annotation.start
@@ -118,11 +144,7 @@ class TaggedSequence:
             s = self._text[start:end]
             tag = annotation.tag
 
-            rgba = cmap(norm(tags_to_idx[tag]))
-            r = int(rgba[0] * 255)
-            g = int(rgba[1] * 255)
-            b = int(rgba[2] * 255)
-            style = f"color:rgb({r}, {g}, {b})"
+            style = f"color: {tags_to_color[tag]}"
 
             ruby = f'<ruby style="{style}"> {s} <rp>(</rp><rt>{tag}</rt><rp>)</rp> </ruby>'
             span = f'<span style="outline: 1px dotted grey;">{ruby}</span>'

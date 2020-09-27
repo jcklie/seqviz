@@ -91,13 +91,32 @@ def test_from_bioes_simple():
     assert s == "[Alex](PER) is going with [Marty A Rick](PER) to [Los Angeles](LOC)"
 
 
-def test_from_bert():
-    text = "Hugging Face is a French company based in New York."
+def test_from_transformers_bio():
+    text = "Hugging Face Inc. is a company based in New York City."
+    groups = [1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1]
     predictions = [
-        {"word": "Hu", "score": 0.9968873858451843, "entity": "I-ORG", "index": 1},
-        {"word": "##gging", "score": 0.9329524040222168, "entity": "I-ORG", "index": 2},
-        {"word": "Face", "score": 0.9781811237335205, "entity": "I-ORG", "index": 3},
-        {"word": "French", "score": 0.9981815814971924, "entity": "I-MISC", "index": 6},
-        {"word": "New", "score": 0.9987512826919556, "entity": "I-LOC", "index": 10},
-        {"word": "York", "score": 0.9976728558540344, "entity": "I-LOC", "index": 11},
+        "O",
+        "I-ORG",
+        "I-ORG",
+        "I-ORG",
+        "I-ORG",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "I-LOC",
+        "I-LOC",
+        "I-LOC",
+        "O",
+        "O",
     ]
+
+    assert sum(groups) == len(predictions)
+
+    seq = TaggedSequence.from_transformers_bio(text, groups, predictions)
+
+    s = str(seq)
+
+    assert s == "[Hugging Face Inc.](ORG) is a company based in [New York City.](LOC)"

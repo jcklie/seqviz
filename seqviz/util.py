@@ -1,32 +1,23 @@
 from typing import List, Tuple
 
+import torch
 
-def fix_bert_subtokenization(text: str, seq: List[Tuple[str, str]]) -> List[Tuple[str, str]]:
-    chars = list(text)
-    fixed_tokens = []
-    fixed_tags = []
 
-    is_whitespace = False
+def tokenize_for_bert(text: str, tokenizer) -> Tuple[torch.Tensor, List[int]]:
+    my_tokens = text.strip().split()
 
-    for token, tag in seq[1:-1]:
-        is_subword = token.startswith("##")
-        token = token.replace("##", "")
+    grouped_inputs = []
+    grouped_inputs.append(torch.LongTensor([tokenizer.cls_token_id]))
 
-        for c in token:
-            removed = chars.pop(0)
-            assert removed == c, f"[{removed}] != [{c}]"
+    for token in my_tokens:
+        tokens = tokenizer.encode(token, return_tensors="pt", add_special_tokens=False)
+        grouped_inputs.append(tokens.squeeze(axis=0))
 
-        if is_subword and not is_whitespace:
-            fixed_tokens[-1] += token
-        else:
-            fixed_tokens.append(token)
-            fixed_tags.append(tag)
+    grouped_inputs.append(torch.LongTensor([tokenizer.sep_token_id]))
 
-        if chars and chars[0] == " ":
-            chars.pop(0)
-            is_whitespace = True
-        else:
-            is_whitespace = False
+    flattened_inputs = torch.cat(grouped_inputs)
+    flattened_inputs = torch.unsqueeze(flattened_inputs, 0)
 
-    assert len(fixed_tokens) == len(fixed_tags)
-    return [(token, tag) for token, tag in zip(fixed_tokens, fixed_tags)]
+    sizes = [len(group) for group in grouped_inputs]
+
+    return flattened_inputs, sizes

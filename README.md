@@ -71,9 +71,23 @@ tagged = TaggedSequence.from_bio(data, fmt="bioes")
 print(tagged) # "[Alex](PER) is going with [Marty A Rick](PER) to [Los Angeles](LOC)"
 ```
 
+## Output formats
+
+Use it in terminal via `str(seq)`:
+
+    [Alex](PER) is going to [Los Angeles](LOC) in [California](LOC)
+
+Or as HTML via `seq.to_html()`:
+
+<p align="center">
+  <img src="img/header.png" />
+</p>
+
 ## Jupyter Notebook integration
 
 You can also use `TaggedSequence` in an Jupyter notebook:
+
+
 
 ## Integration with other NLP frameworks
 
@@ -85,7 +99,7 @@ You can also use `TaggedSequence` in an Jupyter notebook:
 from transformers import AutoModelForTokenClassification, AutoTokenizer
 import torch
 
-from seqviz import TaggedSequence, fix_bert_subtokenization
+from seqviz import TaggedSequence, tokenize_for_bert
 
 model = AutoModelForTokenClassification.from_pretrained("dbmdz/bert-large-cased-finetuned-conll03-english")
 tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
@@ -105,18 +119,16 @@ label_list = [
 text = "Hugging Face Inc. is a company based in New York City. Its headquarters are in DUMBO, therefore very" \
            "close to the Manhattan Bridge."
 
-# Bit of a hack to get the tokens with the special tokens
-tokens = tokenizer.tokenize(tokenizer.decode(tokenizer.encode(text)))
-inputs = tokenizer.encode(text, return_tensors="pt")
+inputs, groups = tokenize_for_bert(text, tokenizer)
 
 outputs = model(inputs)[0]
-predictions = torch.argmax(outputs, dim=2)
+predictions_tensor = torch.argmax(outputs, dim=2)[0]
 
-data = [(token, label_list[prediction]) for token, prediction in zip(tokens, predictions[0].tolist())]
+predictions = [label_list[prediction] for prediction in predictions_tensor]
 
-fixed_data = fix_bert_subtokenization(text, data)
-
-seq = TaggedSequence.from_bio(fixed_data, fmt="iob1")
+seq = TaggedSequence.from_transformers_bio(text, groups, predictions)
 ```
 
-<div style="font-size: 24px;"><span style="outline: 1px dotted grey;"><ruby style="color:rgb(153, 153, 153)"> Hugging Face Inc <rp>(</rp><rt>ORG</rt><rp>)</rp> </ruby></span> . is a company based in <span style="outline: 1px dotted grey;"><ruby style="color:rgb(228, 26, 28)"> New York City <rp>(</rp><rt>LOC</rt><rp>)</rp> </ruby></span> . Its headquarters are in <span style="outline: 1px dotted grey;"><ruby style="color:rgb(228, 26, 28)"> DUMBO <rp>(</rp><rt>LOC</rt><rp>)</rp> </ruby></span> , therefore very close to the <span style="outline: 1px dotted grey;"><ruby style="color:rgb(228, 26, 28)"> Manhattan Bridge <rp>(</rp><rt>LOC</rt><rp>)</rp> </ruby></span> .</div>
+<p align="center">
+  <img src="img/transformer_ner.png" />
+</p>
