@@ -4,7 +4,7 @@
 to print to console or in Jupyter Notebooks.
 
 <p align="center">
-  <img src="img/header.png" />
+  <img src="https://raw.githubusercontent.com/jcklie/seqviz/master/img/header.png" />
 </p>
 
 
@@ -85,7 +85,7 @@ Use it in terminal via `str(seq)`:
 Or as HTML via `seq.to_html()`:
 
 <p align="center">
-  <img src="img/header.png" />
+  <img src="https://raw.githubusercontent.com/jcklie/seqviz/master/img/header.png" />
 </p>
 
 ## Jupyter Notebook integration
@@ -93,7 +93,7 @@ Or as HTML via `seq.to_html()`:
 You can also use `TaggedSequence` in an Jupyter notebook:
 
 <p align="center">
-  <img src="img/jupyter_ner.png" />
+  <img src="https://raw.githubusercontent.com/jcklie/seqviz/master/img/jupyter_ner.png" />
 </p>
 
 ## Integration with other NLP frameworks
@@ -137,5 +137,5 @@ seq = TaggedSequence.from_transformers_bio(text, groups, predictions)
 ```
 
 <p align="center">
-  <img src="img/transformer_ner.png" />
+  <img src="https://raw.githubusercontent.com/jcklie/seqviz/master/img/transformer_ner.png" />
 </p>

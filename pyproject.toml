@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "seqviz"
-version = "0.1.0"
+version = "0.1.1"
 description = "seqviz is a Python package to visualize sequence tagging results. It can be either be used to print to console or in Jupyter Notebooks."
 authors = ["Jan-Christoph Klie <git@mrklie.com>"]
 license = "MIT"
